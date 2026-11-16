@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCA Region X - Travel Order System</title>
+    <style>
+        body { font-family: Calibri, Arial, sans-serif; background: #eef2f6; margin: 0; padding: 20px; }
+        .form-container { max-width: 720px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .form-container h2 { text-align: center; color: #1b5e20; margin-top: 0; margin-bottom: 5px; }
+        .form-container p.sub { text-align: center; color: #555; font-size: 13px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 14px; color: #222; }
+        input, select, textarea { width: 100%; padding: 9px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; font-family: inherit; }
+        
+        button { width: 100%; background: #1b5e20; color: white; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 5px; margin-top: 15px; cursor: pointer; }
+        button:hover { background: #144718; }
+        button:disabled { background: #888; cursor: not-allowed; }
+
+        .type-selector { display: flex; gap: 15px; margin-bottom: 20px; background: #f4f6f8; padding: 12px; border-radius: 6px; border: 1px solid #dce1e7; }
+        .type-selector label { font-weight: normal; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; margin: 0; }
+        .type-selector input[type="radio"] { width: auto; }
+
+        .personnel-box { background: #f9fbf9; border: 1px solid #c8e6c9; padding: 15px; border-radius: 6px; margin-bottom: 16px; }
+        .personnel-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+        .personnel-row .p-name { flex: 1.2; text-transform: uppercase; }
+        .personnel-row .p-pos { flex: 1.3; }
+        
+        .btn-remove { background: #c62828; width: auto; padding: 9px 12px; margin-top: 0; font-size: 13px; border-radius: 4px; }
+        .btn-remove:hover { background: #9a0007; }
+        .btn-add { background: #2e7d32; width: auto; padding: 8px 14px; margin-top: 2px; font-size: 13px; border-radius: 4px; display: inline-block; }
+
+        .activity-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .activity-row input { flex: 1; }
+        .activity-row .act-date { width: 140px; flex: none; }
+
+        .action-bar { max-width: 800px; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; }
+        .action-bar button { width: auto; margin-top: 0; padding: 10px 20px; font-size: 14px; }
+        .btn-back { background: #555; }
+        .btn-print { background: #0d47a1; }
+
+        #to-document-wrapper { display: none; }
+        
+        .paper {
+            max-width: 800px;
+            min-height: 1050px;
+            margin: auto;
+            background-color: white;
+            background-image: url('https://lh3.googleusercontent.com/d/1K5RkxC8mM7_2POiJA-Zw03LhrUt52GMs');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            padding: 40px 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            position: relative;
+            color: #000;
+        }
+
+        .paper-content { position: relative; z-index: 2; display: flex; flex-direction: column; min-height: 970px; justify-content: space-between; }
+
+        .letterhead-container {
+            text-align: center;
+            border-bottom: 2px solid #2e7d32;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .header-text { width: 100%; text-align: center; }
+        .lh-republic { font-size: 11px; letter-spacing: 0.5px; color: #444; margin: 0; }
+        .lh-dept { font-size: 13px; font-weight: bold; color: #333; margin: 2px 0; }
+        .lh-agency { font-size: 15px; font-weight: bold; color: #1b5e20; margin: 2px 0; }
+        .lh-region { font-size: 13px; font-weight: bold; color: #333; margin: 2px 0; }
+        .lh-address { font-size: 11px; color: #444; margin: 2px 0; }
+        .lh-email { color: #1a73e8; text-decoration: underline; }
+
+        .doc-title { text-align: center; font-size: 15px; font-weight: bold; letter-spacing: 1px; margin: 10px 0 15px 0; }
+
+        .info-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px; }
+        .info-table td { padding: 4px 4px; vertical-align: top; }
+        .lbl { font-weight: bold; width: 170px; }
+        .val { font-weight: normal; }
+        .lbl-right { font-weight: bold; width: 125px; padding-left: 15px !important; }
+        .val-right { font-weight: bold; width: 120px; color: #0d47a1; }
+
+        .multi-pers-list { margin: 0; padding: 0; list-style: none; }
+        .multi-pers-list li { margin-bottom: 2px; line-height: 1.3; }
+        .pers-pos-tag { font-style: italic; color: #222; }
+
+        #out-to-number-single, #out-to-number-multi { color: #0d47a1 !important; font-weight: bold; font-size: 15px; }
+
+        .per-diem-text { font-size: 13px; margin: 10px 0 15px 20px; line-height: 1.4; }
+
+        .signatories { width: 100%; border-collapse: collapse; margin-top: 5px; margin-bottom: 15px; font-size: 13px; }
+        .signatories td { vertical-align: top; padding: 0 15px; }
+        .sig-title { margin-bottom: 28px; text-align: center; }
+        .sig-name { font-weight: bold; text-align: center; text-transform: uppercase; }
+        .sig-pos { text-align: center; font-size: 12px; }
+
+        .coa-title { text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
+        .coa-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .coa-table th, .coa-table td { border: 1px solid #000; padding: 4px 6px; text-align: center; }
+
+        .footer-wrapper { margin-top: auto; padding-top: 10px; }
+        .footer-tagline {
+            font-family: Georgia, serif; font-style: italic; font-size: 12px;
+            color: #795548; border-bottom: 1px solid #d7ccc8; display: inline-block; padding-bottom: 2px;
+        }
+
+        @media print {
+            @page { size: A4; margin: 0mm; }
+            body { background: white; padding: 0; margin: 0; }
+            .no-print { display: none !important; }
+            .paper { 
+                box-shadow: none; 
+                padding: 10mm 15mm; 
+                max-width: 100%; 
+                min-height: 297mm;
+                height: 297mm;
+                page-break-after: always;
+                break-after: page;
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+            }
+            #out-to-number-single, #out-to-number-multi { color: #0d47a1 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container no-print" id="form-section">
+    <h2>PCA Region X - Travel Order System</h2>
+    <p class="sub">Pumili kung Regional o Provincial Office, at ilagay ang mga personnel na bibiyahe</p>
+    
+    <div class="type-selector">
+        <label><input type="radio" name="toType" value="regional" checked onclick="toggleTOType()"> <b>Regional Office</b> (Standard)</label>
+        <label><input type="radio" name="toType" value="provincial" onclick="toggleTOType()"> <b>Provincial Office</b> (1-Month / Monthly Activities)</label>
+    </div>
+
+    <form id="travelForm" onsubmit="generateTO(event)">
+        
+        <div class="personnel-box">
+            <label style="color: #1b5e20; margin-bottom: 8px;">Personnel(s) & Position(s): <span style="font-weight: normal; color: #555; font-size: 12px;">(Mag-type para mag-search ng position o pumili sa dropdown)</span></label>
+            <div id="personnelList">
+                <div class="personnel-row">
+                    <input type="text" class="p-name" required placeholder="Full Name (e.g. JUAN A. DELA CRUZ)" oninput="this.value = this.value.toUpperCase()">
+                    <input type="text" class="p-pos" list="pcaPositionsList" required placeholder="Search or type position...">
+                    <button type="button" class="btn-remove" onclick="removePersonnel(this)" title="Remove">X</button>
+                </div>
+            </div>
+            <button type="button" class="btn-add" onclick="addPersonnel()">+ Add Another Personnel</button>
+        </div>
+
+        <datalist id="pcaPositionsList">
+            <option value="Regional Manager">
+            <option value="Regional Manager III">
+            <option value="Provincial Coconut Development Officer">
+            <option value="Research Center Manager">
+            <option value="Coconut Production and Regulation Assistant I">
+            <option value="Coconut Production and Regulation Assistant II">
+            <option value="Coconut Production and Regulation Officer I">
+            <option value="Coconut Production and Regulation Officer II">
+            <option value="Coconut Production and Regulation Officer III">
+            <option value="Senior Coconut Production and Regulation Officer">
+            <option value="Supervising Coconut Production and Regulation Officer">
+            <option value="Chief Coconut Production and Regulation Officer">
+            <option value="Agriculturist">
+            <option value="Agricultural Technician">
+            <option value="Project Development Officer">
+            <option value="Acting Project Development Officer IV">
+            <option value="Community Development Officer">
+            <option value="Extension Worker">
+            <option value="Field Operations Officer">
+            <option value="Science Research Specialist">
+            <option value="Senior Science Research Specialist">
+            <option value="Supervising Science Research Specialist">
+            <option value="Chief Science Research Specialist">
+            <option value="Research Assistant">
+            <option value="Laboratory Technician">
+            <option value="Laboratory Analyst">
+            <option value="Researcher">
+            <option value="Food Product Development Specialist">
+            <option value="Biotechnology Specialist">
+            <option value="Agricultural Soils Specialist">
+            <option value="Administrative Officer I">
+            <option value="Administrative Officer II">
+            <option value="Administrative Officer III">
+            <option value="Administrative Officer IV">
+            <option value="Administrative Officer V">
+            <option value="Administrative Assistant">
+            <option value="Administrative Aide">
+            <option value="Human Resource Management Officer">
+            <option value="Records Officer">
+            <option value="Property Officer">
+            <option value="Supply Officer">
+            <option value="Procurement Officer">
+            <option value="General Services Officer">
+            <option value="Planning Officer">
+            <option value="Accountant I">
+            <option value="Accountant II">
+            <option value="Accountant III">
+            <option value="Budget Officer">
+            <option value="Budget Analyst">
+            <option value="Cashier">
+            <option value="Disbursing Officer">
+            <option value="Accounting Clerk">
+            <option value="Financial Analyst">
+            <option value="Collection Officer">
+            <option value="Attorney III">
+            <option value="Attorney IV">
+            <option value="Legal Assistant">
+            <option value="Internal Auditor I">
+            <option value="Internal Auditor II">
+            <option value="Internal Auditor III">
+            <option value="Corporate Planning Officer">
+            <option value="Corporate Secretary">
+            <option value="Board Secretary">
+            <option value="Technical Staff">
+            <option value="Information Technology Officer">
+            <option value="Computer Programmer">
+            <option value="Systems Analyst">
+            <option value="Database Administrator">
+            <option value="IT Support Staff">
+            <option value="Data Encoder">
+            <option value="Information Officer">
+            <option value="Communication Officer">
+            <option value="Department Manager II">
+            <option value="Project Evaluation Officer">
+            <option value="Monitoring and Evaluation Officer">
+            <option value="Financial Management Specialist">
+            <option value="Procurement Specialist">
+            <option value="Project Coordinator">
+            <option value="Driver">
+            <option value="Utility Worker">
+            <option value="Messenger">
+            <option value="Clerk">
+            <option value="Security Guard">
+            <option value="Janitor">
+            <option value="Office Aide">
+            <option value="Encoder">
+        </datalist>
+
+        <div class="form-group">
+            <label>Official Station:</label>
+            <select id="station" required>
+                <option value="" disabled selected>-- Select Official Station --</option>
+                <option value="PCA - Regional Office X">PCA - Regional Office X</option>
+                <option value="PCA - Provincial Office, Misamis Oriental">PCA - Provincial Office, Misamis Oriental</option>
+                <option value="PCA - Provincial Office, Misamis Occidental">PCA - Provincial Office, Misamis Occidental</option>
+                <option value="PCA - Provincial Office, Bukidnon">PCA - Provincial Office, Bukidnon</option>
+                <option value="PCA - Provincial Office, Lanao del Norte">PCA - Provincial Office, Lanao del Norte</option>
+                <option value="PCA - Provincial Office, Camiguin">PCA - Provincial Office, Camiguin</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="destinationGroup">
+            <label>Destination:</label>
+            <input type="text" id="destination" required placeholder="e.g. Valencia City, Bukidnon">
+        </div>
+
+        <div class="form-group" id="provincialActivitiesGroup" style="display: none; background: #f4f6f8; padding: 12px; border-radius: 6px; border: 1px solid #ddd;">
+            <label>Place (s) Visited & Activities (Certificate of Appearance Items):</label>
+            <div id="activitiesList">
+                <div class="activity-row">
+                    <input type="text" class="act-place" placeholder="Place Visited">
+                    <input type="date" class="act-date">
+                    <input type="text" class="act-purpose" placeholder="Purpose / Activity">
+                    <button type="button" class="btn-remove" onclick="removeActivity(this)">X</button>
+                </div>
+            </div>
+            <button type="button" class="btn-add" onclick="addActivity()">+ Add Activity Row</button>
+        </div>
+
+        <div class="form-group">
+            <label>Purpose (General Scope):</label>
+            <textarea id="purpose" rows="2" required placeholder="e.g. To undertake and implement PCA projects and programs and other related field activities."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Date of Departure:</label>
+                <input type="date" id="departure" required>
+            </div>
+
+            <div class="form-group" style="flex: 1;">
+                <label>Date of Return:</label>
+                <input type="date" id="returnDate" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Means of Transportation:</label>
+            <input type="text" id="transportation" list="transportOptions" required placeholder="Select from list or type...">
+            <datalist id="transportOptions">
+                <option value="Land/PUJ/PUB/PUV/Hired MC">
+                <option value="RP/PUV">
+                <option value="Official Vehicle (RP)">
+                <option value="Bus / Van">
+                <option value="Ferry / Boat">
+                <option value="Private Vehicle">
+            </datalist>
+        </div>
+
+        <div class="form-group">
+            <label>Immediate Supervisor (Recommending Approval):</label>
+            <select id="supervisor">
+                <option value="">-- None / Wala --</option>
+                <option value="YVETTE B. GUANZON">YVETTE B. GUANZON</option>
+                <option value="RALPH MARCEL C. ESTAÑO">RALPH MARCEL C. ESTAÑO</option>
+                <option value="HYMN P. JOSEPH">HYMN P. JOSEPH</option>
+                <option value="CRISPIN O. GAMBOA">CRISPIN O. GAMBOA</option>
+                <option value="MOHAMMAD-FAIZ M. MACAKILING">MOHAMMAD-FAIZ M. MACAKILING</option>
+                <option value="JAMILCA R. RUIZ">JAMILCA R. RUIZ</option>
+                <option value="CAREEN MAE V. GO">CAREEN MAE V. GO</option>
+                <option value="JONATHAN B. PADERANGA">JONATHAN B. PADERANGA</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Approving Officer / Authority: <span style="font-weight: normal; color: #555; font-size: 12px;">(Pumili o mag-type ng pangalan at position)</span></label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="approvingName" list="approvingNamesList" value="YVETTE B. GUANZON" oninput="this.value = this.value.toUpperCase(); autoFillApprovingPos()" placeholder="Approving Officer Name" style="flex: 1.2;" required>
+                <input type="text" id="approvingPos" list="pcaPositionsList" value="Regional Manager III" placeholder="Search or type position..." style="flex: 1.3;" required>
+            </div>
+            <datalist id="approvingNamesList">
+                <option value="YVETTE B. GUANZON">
+                <option value="RALPH MARCEL C. ESTAÑO">
+                <option value="CAREEN MAE V. GO">
+                <option value="JAMILCA R. RUIZ">
+                <option value="JONATHAN B. PADERANGA">
+            </datalist>
+        </div>
+
+        <button type="submit" id="submitBtn">Generate Travel Order</button>
+    </form>
+</div>
+
+<div id="to-document-wrapper">
+    <div class="action-bar no-print">
+        <button class="btn-back" onclick="createNewTO()">+ Create Another TO</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+
+    <div class="paper">
+        <div class="paper-content">
+            <div>
+                <div class="letterhead-container">
+                    <div class="header-text">
+                        <p class="lh-republic">REPUBLIC OF THE PHILIPPINES</p>
+                        <p class="lh-dept">DEPARTMENT OF AGRICULTURE</p>
+                        <p class="lh-agency">PHILIPPINE COCONUT AUTHORITY</p>
+                        <p class="lh-region">Region X - Northern Mindanao</p>
+                        <p class="lh-address">Zone 3, Poblacion, El Salvador City, Misamis Oriental, 9017</p>
+                        <p class="lh-address">Tel. Nos.: (088) 851-9668 | Email Address: <span class="lh-email">pca_regionx@pca.gov.ph</span></p>
+                    </div>
+                </div>
+
+                <div class="doc-title">TRAVEL ORDER</div>
+
+                <table class="info-table">
+                    <tr id="single-name-row">
+                        <td class="lbl">Name:</td>
+                        <td class="val" id="out-name" style="text-transform: uppercase; font-weight: bold;"></td>
+                        <td class="lbl-right">Travel Order No.:</td>
+                        <td class="val-right" id="out-to-number-single"></td>
+                    </tr>
+                    <tr id="single-pos-row">
+                        <td class="lbl">Position:</td>
+                        <td class="val" id="out-position"></td>
+                        <td class="lbl-right">Date:</td>
+                        <td class="val-right" id="out-date-filed-single" style="font-weight: normal; color: #000;"></td>
+                    </tr>
+
+                    <tr id="multi-personnel-row" style="display: none;">
+                        <td class="lbl">Personnel(s):</td>
+                        <td class="val" id="out-multi-personnel"></td>
+                        <td colspan="2" style="vertical-align: top; padding-left: 15px;">
+                            <div><b>Travel Order No.:</b> <span id="out-to-number-multi"></span></div>
+                            <div style="margin-top: 4px;"><b>Date:</b> <span id="out-date-filed-multi" style="color: #000;"></span></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="lbl">Official Station:</td>
+                        <td class="val" colspan="3" id="out-station"></td>
+                    </tr>
+                    <tr id="out-destination-row">
+                        <td class="lbl">Destination:</td>
+                        <td class="val" colspan="3" id="out-destination"></td>
+                    </tr>
+                    <tr id="out-visited-row" style="display: none;">
+                        <td class="lbl">Place (s) Visited:</td>
+                        <td class="val" colspan="3" id="out-visited-text"></td>
+                    </tr>
+                    <tr>
+                        <td class="lbl">Purpose:</td>
+                        <td class="val" colspan="3" id="out-purpose"></td>
+                    </tr>
+                    <tr>
+                        <td class="lbl">Date of Departure:</td>
+                        <td class="val" colspan="3" id="out-departure"></td>
+                    </tr>
+                    <tr>
+                        <td class="lbl">Date of Return:</td>
+                        <td class="val" colspan="3" id="out-return"></td>
+                    </tr>
+                    <tr>
+                        <td class="lbl">Means of Transportation:</td>
+                        <td class="val" colspan="3" id="out-transportation"></td>
+                    </tr>
+                </table>
+
+                <div class="per-diem-text">
+                    You are entitled to Per Diem and Allowances in accordance with existing regulations during your travel.
+                </div>
+
+                <table class="signatories">
+                    <tr id="signatories-row"></tr>
+                </table>
+
+                <div class="coa-title">CERTIFICATE OF APPEARANCE</div>
+                <table class="coa-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">PLACE VISITED</th>
+                            <th style="width: 15%;">DATE</th>
+                            <th style="width: 35%;">PURPOSE</th>
+                            <th style="width: 20%;">CERTIFYING OFFICE/PERSON</th>
+                        </tr>
+                    </thead>
+                    <tbody id="out-coa-tbody"></tbody>
+                </table>
+            </div>
+
+            <div class="footer-wrapper">
+                <div class="footer-tagline">Masaganang Agrikultura, Maunlad na Ekonomiya</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL (Yung nagtatapos sa /exec)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-OdBvVAKBaRrGztPUkWY_jeFzdup3gUL1MAfA_f1ErpvPpZ7bwnKAPSOgEL8HT1MIsQ/exec";
+
+    function autoFillApprovingPos() {
+        const nameVal = document.getElementById('approvingName').value.trim().toUpperCase();
+        const posInput = document.getElementById('approvingPos');
+        const knownPositions = {
+            "YVETTE B. GUANZON": "Regional Manager III",
+            "RALPH MARCEL C. ESTAÑO": "Acting Project Development Officer IV",
+            "CAREEN MAE V. GO": "Administrative Officer V",
+            "JAMILCA R. RUIZ": "Accountant III",
+            "JONATHAN B. PADERANGA": "Coconut Production and Regulation Officer III"
+        };
+        if (knownPositions[nameVal]) {
+            posInput.value = knownPositions[nameVal];
+        }
+    }
+
+    function addPersonnel() {
+        const list = document.getElementById('personnelList');
+        const row = document.createElement('div');
+        row.className = 'personnel-row';
+        row.innerHTML = `
+            <input type="text" class="p-name" required placeholder="Full Name (e.g. MARIA B. SANTOS)" oninput="this.value = this.value.toUpperCase()">
+            <input type="text" class="p-pos" list="pcaPositionsList" required placeholder="Search or type position...">
+            <button type="button" class="btn-remove" onclick="removePersonnel(this)" title="Remove">X</button>
+        `;
+        list.appendChild(row);
+    }
+
+    function removePersonnel(btn) {
+        const list = document.getElementById('personnelList');
+        if (list.children.length > 1) {
+            btn.parentElement.remove();
+        } else {
+            alert("Kailangan ng kahit isang personnel sa Travel Order.");
+        }
+    }
+
+    function toggleTOType() {
+        const type = document.querySelector('input[name="toType"]:checked').value;
+        const destGroup = document.getElementById('destinationGroup');
+        const provGroup = document.getElementById('provincialActivitiesGroup');
+        
+        if (type === 'provincial') {
+            destGroup.style.display = 'none';
+            document.getElementById('destination').required = false;
+            provGroup.style.display = 'block';
+        } else {
+            destGroup.style.display = 'block';
+            document.getElementById('destination').required = true;
+            provGroup.style.display = 'none';
+        }
+    }
+
+    function addActivity() {
+        const list = document.getElementById('activitiesList');
+        const row = document.createElement('div');
+        row.className = 'activity-row';
+        row.innerHTML = `
+            <input type="text" class="act-place" placeholder="Place Visited">
+            <input type="date" class="act-date">
+            <input type="text" class="act-purpose" placeholder="Purpose / Activity">
+            <button type="button" class="btn-remove" onclick="removeActivity(this)">X</button>
+        `;
+        list.appendChild(row);
+    }
+
+    function removeActivity(btn) {
+        const list = document.getElementById('activitiesList');
+        if (list.children.length > 1) {
+            btn.parentElement.remove();
+        } else {
+            alert("Kailangan kahit isang activity row.");
+        }
+    }
+
+    function formatDateMMDDYYYY(dateStr) {
+        if (!dateStr) return "";
+        const parts = dateStr.split("-");
+        return `${parts[1]}/${parts[2]}/${parts[0]}`;
+    }
+
+    function generateTO(e) {
+        e.preventDefault();
+        
+        var depDate = document.getElementById('departure').value;
+        var retDate = document.getElementById('returnDate').value;
+        
+        if (retDate < depDate) {
+            alert("Ang Date of Return ay hindi maaaring mas maaga sa Date of Departure.");
+            return;
+        }
+
+        let personnelRows = document.querySelectorAll('.personnel-row');
+        let personnelList = [];
+        personnelRows.forEach(row => {
+            let pName = row.querySelector('.p-name').value.trim().toUpperCase();
+            let pPos = row.querySelector('.p-pos').value.trim();
+            if (pName) {
+                personnelList.push({ name: pName, position: pPos });
+            }
+        });
+
+        var toType = document.querySelector('input[name="toType"]:checked').value;
+        var btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "Saving to Database & Generating TO...";
+
+        var supervisorVal = document.getElementById('supervisor').value;
+        var approvingNameVal = document.getElementById('approvingName').value.trim().toUpperCase();
+        var approvingPosVal = document.getElementById('approvingPos').value.trim();
+        var approvingText = `${approvingNameVal} (${approvingPosVal})`;
+
+        let destinationVal = "";
+        let activitiesArr = [];
+
+        if (toType === 'regional') {
+            destinationVal = document.getElementById('destination').value;
+        } else {
+            let placeRows = document.querySelectorAll('.activity-row');
+            let placesSet = new Set();
+            placeRows.forEach(r => {
+                let p = r.querySelector('.act-place').value;
+                let d = r.querySelector('.act-date').value;
+                let pur = r.querySelector('.act-purpose').value;
+                if (p) placesSet.add(p);
+                
+                let formattedActDate = d ? formatDateMMDDYYYY(d) : "";
+                activitiesArr.push({ place: p, date: formattedActDate, purpose: pur });
+            });
+            destinationVal = "Different barangays of " + Array.from(placesSet).join(", ");
+        }
+
+        let namesCombined = personnelList.map(p => p.name).join(" / ");
+        let positionsCombined = personnelList.map(p => p.position).join(" / ");
+
+        var formData = {
+            toType: toType,
+            namesCombined: namesCombined,
+            positionsCombined: positionsCombined,
+            station: document.getElementById('station').value,
+            destination: destinationVal,
+            purpose: document.getElementById('purpose').value,
+            departure: formatDateMMDDYYYY(depDate),
+            returnDate: formatDateMMDDYYYY(retDate),
+            transportation: document.getElementById('transportation').value,
+            supervisor: supervisorVal ? supervisorVal : "N/A",
+            approvingOfficer: approvingText,
+            activitiesSummary: JSON.stringify(activitiesArr)
+        };
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "error") {
+                throw new Error(data.message);
+            }
+            
+            let assignedTONumber = data.toNumber;
+            
+            let today = new Date();
+            let mm = String(today.getMonth() + 1).padStart(2, '0');
+            let dd = String(today.getDate()).padStart(2, '0');
+            let yyyy = today.getFullYear();
+            let formattedToday = `${mm}/${dd}/${yyyy}`;
+
+            if (personnelList.length === 1) {
+                document.getElementById('single-name-row').style.display = 'table-row';
+                document.getElementById('single-pos-row').style.display = 'table-row';
+                document.getElementById('multi-personnel-row').style.display = 'none';
+
+                document.getElementById('out-to-number-single').innerText = assignedTONumber;
+                document.getElementById('out-date-filed-single').innerText = formattedToday;
+                document.getElementById('out-name').innerText = personnelList[0].name;
+                document.getElementById('out-position').innerText = personnelList[0].position;
+            } else {
+                document.getElementById('single-name-row').style.display = 'none';
+                document.getElementById('single-pos-row').style.display = 'none';
+                document.getElementById('multi-personnel-row').style.display = 'table-row';
+
+                document.getElementById('out-to-number-multi').innerText = assignedTONumber;
+                document.getElementById('out-date-filed-multi').innerText = formattedToday;
+
+                let ulHtml = '<ul class="multi-pers-list">';
+                personnelList.forEach(p => {
+                    ulHtml += `<li><b>${p.name}</b> — <span class="pers-pos-tag">${p.position}</span></li>`;
+                });
+                ulHtml += '</ul>';
+                document.getElementById('out-multi-personnel').innerHTML = ulHtml;
+            }
+
+            document.getElementById('out-station').innerText = formData.station;
+            document.getElementById('out-purpose').innerText = formData.purpose;
+            document.getElementById('out-departure').innerText = formData.departure;
+            document.getElementById('out-return').innerText = formData.returnDate;
+            document.getElementById('out-transportation').innerText = formData.transportation;
+
+            if (toType === 'regional') {
+                document.getElementById('out-destination-row').style.display = 'table-row';
+                document.getElementById('out-visited-row').style.display = 'none';
+                document.getElementById('out-destination').innerText = destinationVal;
+            } else {
+                document.getElementById('out-destination-row').style.display = 'none';
+                document.getElementById('out-visited-row').style.display = 'table-row';
+                document.getElementById('out-visited-text').innerText = destinationVal;
+            }
+
+            let sigRow = document.getElementById('signatories-row');
+            let defaultApprover = { name: "YVETTE B. GUANZON", pos: "Regional Manager III" };
+            let rightTdContent = "";
+
+            if (approvingNameVal === "YVETTE B. GUANZON") {
+                rightTdContent = `
+                    <div class="sig-title">Approved:</div>
+                    <div class="sig-name">${approvingNameVal}</div>
+                    <div class="sig-pos">${approvingPosVal}</div>
+                `;
+            } else {
+                rightTdContent = `
+                    <div style="text-align: center; font-size: 13px; margin-bottom: 12px;">By the Authority of the Regional Manager:</div>
+                    <div class="sig-name" style="margin-bottom: 2px;">${approvingNameVal}</div>
+                    <div class="sig-pos" style="margin-bottom: 12px;">${approvingPosVal}</div>
+                    
+                    <div style="text-align: center; font-size: 13px; margin-bottom: 3px;">Approved:</div>
+                    <div class="sig-name" style="margin-bottom: 2px;">${defaultApprover.name}</div>
+                    <div class="sig-pos">${defaultApprover.pos}</div>
+                `;
+            }
+
+            if (supervisorVal) {
+                sigRow.innerHTML = `
+                    <td style="width: 50%;">
+                        <div class="sig-title">Recommending Approval:</div>
+                        <div class="sig-name">${supervisorVal}</div>
+                        <div class="sig-pos">Immediate Supervisor</div>
+                    </td>
+                    <td style="width: 50%;">
+                        ${rightTdContent}
+                    </td>
+                `;
+            } else {
+                sigRow.innerHTML = `
+                    <td style="width: 50%;"></td>
+                    <td style="width: 50%;">
+                        ${rightTdContent}
+                    </td>
+                `;
+            }
+
+            let coaBody = document.getElementById('out-coa-tbody');
+            coaBody.innerHTML = "";
+
+            if (toType === 'provincial' && activitiesArr.length > 0) {
+                activitiesArr.forEach(act => {
+                    coaBody.innerHTML += `
+                        <tr>
+                            <td style="height: 24px;">${act.place || ""}</td>
+                            <td>${act.date || ""}</td>
+                            <td>${act.purpose || ""}</td>
+                            <td></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                for (let i = 0; i < 4; i++) {
+                    coaBody.innerHTML += `
+                        <tr>
+                            <td style="height: 24px;"></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    `;
+                }
+            }
+
+            document.getElementById('form-section').style.display = 'none';
+            document.getElementById('to-document-wrapper').style.display = 'block';
+            window.scrollTo(0, 0);
+
+            btn.disabled = false;
+            btn.innerText = "Generate Travel Order";
+        })
+        .catch(error => {
+            alert("Nagkaroon ng error sa pag-save: " + error.message);
+            btn.disabled = false;
+            btn.innerText = "Generate Travel Order";
+        });
+    }
+
+    function createNewTO() {
+        document.getElementById('travelForm').reset();
+        document.getElementById('approvingName').value = "YVETTE B. GUANZON";
+        document.getElementById('approvingPos').value = "Regional Manager III";
+        toggleTOType();
+        document.getElementById('to-document-wrapper').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+        window.scrollTo(0, 0);
+    }
+</script>
+</body>
+</html>
