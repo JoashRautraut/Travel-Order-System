@@ -50,9 +50,10 @@
             min-height: 1050px;
             margin: auto;
             background-color: white;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="50" y="50" font-family="Arial" font-size="10" fill="%23f0f3f1" text-anchor="middle" dominant-baseline="central" opacity="0.3">PCA</text></svg>');
-            background-size: 150px 150px;
-            background-repeat: repeat;
+            /* Ibinalik ang iyong Google Drive background/watermark image */
+            background-image: url('https://lh3.googleusercontent.com/d/1K5RkxC8mM7_2POiJA-Zw03LhrUt52GMs');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
             padding: 40px 50px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             box-sizing: border-box;
@@ -444,7 +445,7 @@
 
 <script>
     // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweEhaECAZFiJ-pAgIVYE84bErIPvX3WRx6Ih5bXFLrNEdD5vbc3XG-u5MyiVGrKkMo3g/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoyNGQPKzRTWToWPeafZgUNvFvJSliuqku5qVy4r3gYCiWYl4uBJtJMHl_hke4xu4b/exec";
     let currentGeneratedTONumber = "";
 
     function autoFillApprovingPos() {
@@ -740,7 +741,6 @@
     }
 
     function downloadWord() {
-        // I-clone ang paper content para maalis ang mga nakatagong table rows (display: none) bago i-export sa Word
         const paperClone = document.getElementById('printable-paper').cloneNode(true);
         const hiddenRows = paperClone.querySelectorAll('tr');
         hiddenRows.forEach(tr => {
