@@ -34,8 +34,9 @@
         .activity-row input { flex: 1; }
         .activity-row .act-date { width: 140px; flex: none; }
 
-        .action-bar { max-width: 800px; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; }
-        .action-bar button { width: auto; margin-top: 0; padding: 10px 20px; font-size: 14px; }
+        .action-bar { max-width: 800px; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+        .action-bar button { width: auto; margin-top: 0; padding: 10px 18px; font-size: 14px; }
+        .edit-notice { background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #ffeeba; margin-right: auto; }
         .btn-back { background: #555; }
         .btn-print { background: #0d47a1; }
 
@@ -54,6 +55,20 @@
             box-sizing: border-box;
             position: relative;
             color: #000;
+        }
+
+        /* Ginagawa nitong pwedeng i-click at i-edit ang text sa screen */
+        .editable-area {
+            outline: none;
+            transition: background 0.2s;
+        }
+        .editable-area:hover {
+            background-color: rgba(255, 235, 59, 0.15);
+            cursor: text;
+        }
+        .editable-area:focus {
+            background-color: rgba(255, 235, 59, 0.3);
+            border-bottom: 1px dashed #1b5e20;
         }
 
         .paper-content { position: relative; z-index: 2; display: flex; flex-direction: column; min-height: 970px; justify-content: space-between; }
@@ -109,6 +124,7 @@
             @page { size: A4; margin: 0mm; }
             body { background: white; padding: 0; margin: 0; }
             .no-print { display: none !important; }
+            .editable-area { background-color: transparent !important; border: none !important; }
             .paper { 
                 box-shadow: none; 
                 padding: 10mm 15mm; 
@@ -335,6 +351,7 @@
 
 <div id="to-document-wrapper">
     <div class="action-bar no-print">
+        <div class="edit-notice">💡 Tip: Pwede mong i-click at i-edit ang anumang text sa papel kung may babaguhin ka!</div>
         <button class="btn-back" onclick="createNewTO()">+ Create Another TO</button>
         <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
     </div>
@@ -344,71 +361,72 @@
             <div>
                 <div class="letterhead-container">
                     <div class="header-text">
-                        <p class="lh-republic">REPUBLIC OF THE PHILIPPINES</p>
-                        <p class="lh-dept">DEPARTMENT OF AGRICULTURE</p>
-                        <p class="lh-agency">PHILIPPINE COCONUT AUTHORITY</p>
-                        <p class="lh-region">Region X - Northern Mindanao</p>
-                        <p class="lh-address">Zone 3, Poblacion, El Salvador City, Misamis Oriental, 9017</p>
-                        <p class="lh-address">Tel. Nos.: (088) 851-9668 | Email Address: <span class="lh-email">pca_regionx@pca.gov.ph</span></p>
+                        <p class="lh-republic editable-area" contenteditable="true">REPUBLIC OF THE PHILIPPINES</p>
+                        <p class="lh-dept editable-area" contenteditable="true">DEPARTMENT OF AGRICULTURE</p>
+                        <p class="lh-agency editable-area" contenteditable="true">PHILIPPINE COCONUT AUTHORITY</p>
+                        <p class="lh-region editable-area" contenteditable="true">Region X - Northern Mindanao</p>
+                        <p class="lh-address editable-area" contenteditable="true">Zone 3, Poblacion, El Salvador City, Misamis Oriental, 9017</p>
+                        <p class="lh-address">Tel. Nos.: (088) 851-9668 | Email Address: <span class="lh-email editable-area" contenteditable="true">pca_regionx@pca.gov.ph</span></p>
                     </div>
                 </div>
 
-                <div class="doc-title">TRAVEL ORDER</div>
+                <div class="doc-title editable-area" contenteditable="true">TRAVEL ORDER</div>
 
                 <table class="info-table">
                     <tr id="single-name-row">
-                        <td class="lbl">Name:</td>
-                        <td class="val" id="out-name" style="text-transform: uppercase; font-weight: bold;"></td>
-                        <td class="lbl-right">Travel Order No.:</td>
+                        <td class="lbl editable-area" contenteditable="true">Name:</td>
+                        <td class="val editable-area" contenteditable="true" id="out-name" style="text-transform: uppercase; font-weight: bold;"></td>
+                        <td class="lbl-right editable-area" contenteditable="true">Travel Order No.:</td>
+                        <!-- TO Number ay HINDI pwedeng i-edit (walang contenteditable) -->
                         <td class="val-right" id="out-to-number-single"></td>
                     </tr>
                     <tr id="single-pos-row">
-                        <td class="lbl">Position:</td>
-                        <td class="val" id="out-position"></td>
-                        <td class="lbl-right">Date:</td>
-                        <td class="val-right" id="out-date-filed-single" style="font-weight: normal; color: #000;"></td>
+                        <td class="lbl editable-area" contenteditable="true">Position:</td>
+                        <td class="val editable-area" contenteditable="true" id="out-position"></td>
+                        <td class="lbl-right editable-area" contenteditable="true">Date:</td>
+                        <td class="val-right editable-area" contenteditable="true" id="out-date-filed-single" style="font-weight: normal; color: #000;"></td>
                     </tr>
 
                     <tr id="multi-personnel-row" style="display: none;">
-                        <td class="lbl">Personnel(s):</td>
-                        <td class="val" id="out-multi-personnel"></td>
+                        <td class="lbl editable-area" contenteditable="true">Personnel(s):</td>
+                        <td class="val editable-area" contenteditable="true" id="out-multi-personnel"></td>
                         <td colspan="2" style="vertical-align: top; padding-left: 15px;">
-                            <div><b>Travel Order No.:</b> <span id="out-to-number-multi"></span></div>
-                            <div style="margin-top: 4px;"><b>Date:</b> <span id="out-date-filed-multi" style="color: #000;"></span></div>
+                            <div><b class="editable-area" contenteditable="true">Travel Order No.:</b> <span id="out-to-number-multi"></span></div>
+                            <div style="margin-top: 4px;"><b class="editable-area" contenteditable="true">Date:</b> <span class="editable-area" contenteditable="true" id="out-date-filed-multi" style="color: #000;"></span></div>
                         </td>
                     </tr>
 
                     <tr>
-                        <td class="lbl">Official Station:</td>
-                        <td class="val" colspan="3" id="out-station"></td>
+                        <td class="lbl editable-area" contenteditable="true">Official Station:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-station"></td>
                     </tr>
                     <tr id="out-destination-row">
-                        <td class="lbl">Destination:</td>
-                        <td class="val" colspan="3" id="out-destination"></td>
+                        <td class="lbl editable-area" contenteditable="true">Destination:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-destination"></td>
                     </tr>
                     <tr id="out-visited-row" style="display: none;">
-                        <td class="lbl">Place (s) Visited:</td>
-                        <td class="val" colspan="3" id="out-visited-text"></td>
+                        <td class="lbl editable-area" contenteditable="true">Place (s) Visited:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-visited-text"></td>
                     </tr>
                     <tr>
-                        <td class="lbl">Purpose:</td>
-                        <td class="val" colspan="3" id="out-purpose"></td>
+                        <td class="lbl editable-area" contenteditable="true">Purpose:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-purpose"></td>
                     </tr>
                     <tr>
-                        <td class="lbl">Date of Departure:</td>
-                        <td class="val" colspan="3" id="out-departure"></td>
+                        <td class="lbl editable-area" contenteditable="true">Date of Departure:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-departure"></td>
                     </tr>
                     <tr>
-                        <td class="lbl">Date of Return:</td>
-                        <td class="val" colspan="3" id="out-return"></td>
+                        <td class="lbl editable-area" contenteditable="true">Date of Return:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-return"></td>
                     </tr>
                     <tr>
-                        <td class="lbl">Means of Transportation:</td>
-                        <td class="val" colspan="3" id="out-transportation"></td>
+                        <td class="lbl editable-area" contenteditable="true">Means of Transportation:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-transportation"></td>
                     </tr>
                 </table>
 
-                <div class="per-diem-text">
+                <div class="per-diem-text editable-area" contenteditable="true">
                     You are entitled to Per Diem and Allowances in accordance with existing regulations during your travel.
                 </div>
 
@@ -416,14 +434,14 @@
                     <tr id="signatories-row"></tr>
                 </table>
 
-                <div class="coa-title">CERTIFICATE OF APPEARANCE</div>
+                <div class="coa-title editable-area" contenteditable="true">CERTIFICATE OF APPEARANCE</div>
                 <table class="coa-table">
                     <thead>
                         <tr>
-                            <th style="width: 30%;">PLACE VISITED</th>
-                            <th style="width: 15%;">DATE</th>
-                            <th style="width: 35%;">PURPOSE</th>
-                            <th style="width: 20%;">CERTIFYING OFFICE/PERSON</th>
+                            <th class="editable-area" contenteditable="true" style="width: 30%;">PLACE VISITED</th>
+                            <th class="editable-area" contenteditable="true" style="width: 15%;">DATE</th>
+                            <th class="editable-area" contenteditable="true" style="width: 35%;">PURPOSE</th>
+                            <th class="editable-area" contenteditable="true" style="width: 20%;">CERTIFYING OFFICE/PERSON</th>
                         </tr>
                     </thead>
                     <tbody id="out-coa-tbody"></tbody>
@@ -431,7 +449,7 @@
             </div>
 
             <div class="footer-wrapper">
-                <div class="footer-tagline">Masaganang Agrikultura, Maunlad na Ekonomiya</div>
+                <div class="footer-tagline editable-area" contenteditable="true">Masaganang Agrikultura, Maunlad na Ekonomiya</div>
             </div>
         </div>
     </div>
@@ -439,7 +457,7 @@
 
 <script>
     // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyRBgB0nR89G5oWn3Dkrk42Cw0_zkPljpr_OfJEUT8PzIPKRtV_sxZvobBw8kmw5srnw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyo9xJjoGpLfSjAVvnaXKdPkQnfNtSIkDly-XUIOoWKkKGC_hKeDgAjvYZHD3vbkAYURQ/exec";
 
     function autoFillApprovingPos() {
         const nameVal = document.getElementById('approvingName').value.trim().toUpperCase();
@@ -627,7 +645,7 @@
 
                 let ulHtml = '<ul class="multi-pers-list">';
                 personnelList.forEach(p => {
-                    ulHtml += `<li><b>${p.name}</b> — <span class="pers-pos-tag">${p.position}</span></li>`;
+                    ulHtml += `<li class="editable-area" contenteditable="true"><b>${p.name}</b> — <span class="pers-pos-tag">${p.position}</span></li>`;
                 });
                 ulHtml += '</ul>';
                 document.getElementById('out-multi-personnel').innerHTML = ulHtml;
@@ -655,28 +673,28 @@
 
             if (approvingNameVal === "YVETTE B. GUANZON") {
                 rightTdContent = `
-                    <div class="sig-title">Approved:</div>
-                    <div class="sig-name">${approvingNameVal}</div>
-                    <div class="sig-pos">${approvingPosVal}</div>
+                    <div class="sig-title editable-area" contenteditable="true">Approved:</div>
+                    <div class="sig-name editable-area" contenteditable="true">${approvingNameVal}</div>
+                    <div class="sig-pos editable-area" contenteditable="true">${approvingPosVal}</div>
                 `;
             } else {
                 rightTdContent = `
-                    <div style="text-align: center; font-size: 13px; margin-bottom: 12px;">By the Authority of the Regional Manager:</div>
-                    <div class="sig-name" style="margin-bottom: 2px;">${approvingNameVal}</div>
-                    <div class="sig-pos" style="margin-bottom: 12px;">${approvingPosVal}</div>
+                    <div class="editable-area" contenteditable="true" style="text-align: center; font-size: 13px; margin-bottom: 12px;">By the Authority of the Regional Manager:</div>
+                    <div class="sig-name editable-area" contenteditable="true" style="margin-bottom: 2px;">${approvingNameVal}</div>
+                    <div class="sig-pos editable-area" contenteditable="true" style="margin-bottom: 12px;">${approvingPosVal}</div>
                     
-                    <div style="text-align: center; font-size: 13px; margin-bottom: 3px;">Approved:</div>
-                    <div class="sig-name" style="margin-bottom: 2px;">${defaultApprover.name}</div>
-                    <div class="sig-pos">${defaultApprover.pos}</div>
+                    <div class="editable-area" contenteditable="true" style="text-align: center; font-size: 13px; margin-bottom: 3px;">Approved:</div>
+                    <div class="sig-name editable-area" contenteditable="true" style="margin-bottom: 2px;">${defaultApprover.name}</div>
+                    <div class="sig-pos editable-area" contenteditable="true">${defaultApprover.pos}</div>
                 `;
             }
 
             if (supervisorVal) {
                 sigRow.innerHTML = `
                     <td style="width: 50%;">
-                        <div class="sig-title">Recommending Approval:</div>
-                        <div class="sig-name">${supervisorVal}</div>
-                        <div class="sig-pos">Immediate Supervisor</div>
+                        <div class="sig-title editable-area" contenteditable="true">Recommending Approval:</div>
+                        <div class="sig-name editable-area" contenteditable="true">${supervisorVal}</div>
+                        <div class="sig-pos editable-area" contenteditable="true">Immediate Supervisor</div>
                     </td>
                     <td style="width: 50%;">
                         ${rightTdContent}
@@ -698,10 +716,10 @@
                 activitiesArr.forEach(act => {
                     coaBody.innerHTML += `
                         <tr>
-                            <td style="height: 24px;">${act.place || ""}</td>
-                            <td>${act.date || ""}</td>
-                            <td>${act.purpose || ""}</td>
-                            <td></td>
+                            <td class="editable-area" contenteditable="true" style="height: 24px;">${act.place || ""}</td>
+                            <td class="editable-area" contenteditable="true">${act.date || ""}</td>
+                            <td class="editable-area" contenteditable="true">${act.purpose || ""}</td>
+                            <td class="editable-area" contenteditable="true"></td>
                         </tr>
                     `;
                 });
@@ -709,10 +727,10 @@
                 for (let i = 0; i < 4; i++) {
                     coaBody.innerHTML += `
                         <tr>
-                            <td style="height: 24px;"></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td class="editable-area" contenteditable="true" style="height: 24px;"></td>
+                            <td class="editable-area" contenteditable="true"></td>
+                            <td class="editable-area" contenteditable="true"></td>
+                            <td class="editable-area" contenteditable="true"></td>
                         </tr>
                     `;
                 }
