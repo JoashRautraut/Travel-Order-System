@@ -34,10 +34,14 @@
         .activity-row input { flex: 1; }
         .activity-row .act-date { width: 140px; flex: none; }
 
-        .action-bar { max-width: 800px; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; }
-        .action-bar button { width: auto; margin-top: 0; padding: 10px 20px; font-size: 14px; }
+        .action-bar { max-width: 800px; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+        .action-bar button { width: auto; margin-top: 0; padding: 10px 18px; font-size: 14px; }
         .btn-back { background: #555; }
-        .btn-print { background: #0d47a1; }
+        .btn-back:hover { background: #333; }
+        .btn-word { background: #1565c0; }
+        .btn-word:hover { background: #0d47a1; }
+        .btn-print { background: #2e7d32; }
+        .btn-print:hover { background: #1b5e20; }
 
         #to-document-wrapper { display: none; }
         
@@ -46,9 +50,9 @@
             min-height: 1050px;
             margin: auto;
             background-color: white;
-            background-image: url('https://lh3.googleusercontent.com/d/1K5RkxC8mM7_2POiJA-Zw03LhrUt52GMs');
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="50" y="50" font-family="Arial" font-size="10" fill="%23f0f3f1" text-anchor="middle" dominant-baseline="central" opacity="0.3">PCA</text></svg>');
+            background-size: 150px 150px;
+            background-repeat: repeat;
             padding: 40px 50px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             box-sizing: border-box;
@@ -336,10 +340,11 @@
 <div id="to-document-wrapper">
     <div class="action-bar no-print">
         <button class="btn-back" onclick="createNewTO()">+ Create Another TO</button>
+        <button class="btn-word" onclick="downloadWord()">📝 Download Word (.doc)</button>
         <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
     </div>
 
-    <div class="paper">
+    <div class="paper" id="printable-paper">
         <div class="paper-content">
             <div>
                 <div class="letterhead-container">
@@ -438,8 +443,9 @@
 </div>
 
 <script>
-    // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL (Yung nagtatapos sa /exec)
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-OdBvVAKBaRrGztPUkWY_jeFzdup3gUL1MAfA_f1ErpvPpZ7bwnKAPSOgEL8HT1MIsQ/exec";
+    // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbweEhaECAZFiJ-pAgIVYE84bErIPvX3WRx6Ih5bXFLrNEdD5vbc3XG-u5MyiVGrKkMo3g/exec";
+    let currentGeneratedTONumber = "";
 
     function autoFillApprovingPos() {
         const nameVal = document.getElementById('approvingName').value.trim().toUpperCase();
@@ -601,6 +607,7 @@
             }
             
             let assignedTONumber = data.toNumber;
+            currentGeneratedTONumber = assignedTONumber;
             
             let today = new Date();
             let mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -732,10 +739,75 @@
         });
     }
 
+    function downloadWord() {
+        // I-clone ang paper content para maalis ang mga nakatagong table rows (display: none) bago i-export sa Word
+        const paperClone = document.getElementById('printable-paper').cloneNode(true);
+        const hiddenRows = paperClone.querySelectorAll('tr');
+        hiddenRows.forEach(tr => {
+            if (tr.style.display === 'none') {
+                tr.remove();
+            }
+        });
+
+        const wordStyles = `
+            <style>
+                @page { size: A4; margin: 1.27cm 1.5cm; }
+                body { font-family: Calibri, Arial, sans-serif; color: #000; font-size: 11pt; }
+                .letterhead-container { text-align: center; border-bottom: 2px solid #2e7d32; padding-bottom: 8px; margin-bottom: 12px; }
+                .lh-republic { font-size: 9pt; color: #444; margin: 0; }
+                .lh-dept { font-size: 10.5pt; font-weight: bold; color: #333; margin: 1px 0; }
+                .lh-agency { font-size: 12pt; font-weight: bold; color: #1b5e20; margin: 1px 0; }
+                .lh-region { font-size: 10.5pt; font-weight: bold; color: #333; margin: 1px 0; }
+                .lh-address { font-size: 9pt; color: #444; margin: 1px 0; }
+                .lh-email { color: #1a73e8; text-decoration: underline; }
+                .doc-title { text-align: center; font-size: 12pt; font-weight: bold; letter-spacing: 1px; margin: 10px 0 12px 0; }
+                .info-table { width: 100%; border-collapse: collapse; font-size: 10.5pt; margin-bottom: 10px; }
+                .info-table td { padding: 3px 4px; vertical-align: top; }
+                .lbl { font-weight: bold; width: 165px; }
+                .lbl-right { font-weight: bold; width: 120px; padding-left: 12px; }
+                .val-right, #out-to-number-single, #out-to-number-multi { font-weight: bold; color: #0d47a1; font-size: 11.5pt; }
+                .multi-pers-list { margin: 0; padding: 0; list-style: none; }
+                .multi-pers-list li { margin-bottom: 2px; }
+                .pers-pos-tag { font-style: italic; }
+                .per-diem-text { font-size: 10.5pt; margin: 10px 0 14px 18px; }
+                .signatories { width: 100%; border-collapse: collapse; margin-top: 5px; margin-bottom: 14px; font-size: 10.5pt; }
+                .signatories td { vertical-align: top; padding: 0 12px; text-align: center; }
+                .sig-title { margin-bottom: 26px; text-align: center; }
+                .sig-name { font-weight: bold; text-align: center; text-transform: uppercase; }
+                .sig-pos { text-align: center; font-size: 9.5pt; }
+                .coa-title { text-align: center; font-weight: bold; font-size: 10.5pt; margin-bottom: 4px; }
+                .coa-table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+                .coa-table th, .coa-table td { border: 1px solid #000; padding: 4px 5px; text-align: center; }
+                .footer-wrapper { margin-top: 18px; }
+                .footer-tagline { font-family: Georgia, serif; font-style: italic; font-size: 9.5pt; color: #795548; border-bottom: 1px solid #d7ccc8; }
+            </style>
+        `;
+
+        const htmlContent = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+                  xmlns:w='urn:schemas-microsoft-com:office:word' 
+                  xmlns='http://www.w3.org/TR/REC-html40'>
+            <head><meta charset='utf-8'><title>Travel Order</title>${wordStyles}</head>
+            <body>${paperClone.innerHTML}</body>
+            </html>
+        `;
+
+        const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Travel_Order_${currentGeneratedTONumber || 'PCA'}.doc`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
     function createNewTO() {
         document.getElementById('travelForm').reset();
         document.getElementById('approvingName').value = "YVETTE B. GUANZON";
         document.getElementById('approvingPos').value = "Regional Manager III";
+        currentGeneratedTONumber = "";
         toggleTOType();
         document.getElementById('to-document-wrapper').style.display = 'none';
         document.getElementById('form-section').style.display = 'block';
