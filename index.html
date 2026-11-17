@@ -111,8 +111,10 @@
         .sig-pos { text-align: center; font-size: 10pt; }
 
         .coa-title { text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px; }
-        .coa-table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 10px; }
-        .coa-table th, .coa-table td { border: 1px solid #000; padding: 4px 6px; text-align: center; }
+        
+        /* I-ensure na solid black ang borders ng Certificate of Appearance table */
+        .coa-table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 10px; border: 1px solid #000; }
+        .coa-table th, .coa-table td { border: 1px solid #000 !important; padding: 5px 6px; text-align: center; }
 
         .footer-wrapper { margin-top: auto; padding-top: 5px; text-align: left; }
         .footer-tagline {
@@ -125,6 +127,14 @@
             body { background: white; padding: 0; margin: 0; }
             .no-print { display: none !important; }
             .editable-area { background-color: transparent !important; border: none !important; }
+            
+            /* Pinipilit ng print mode na lumitaw ang mga borders ng COA table */
+            .coa-table, .coa-table th, .coa-table td {
+                border: 1px solid #000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
             .paper { 
                 width: 210mm;
                 height: 297mm;
@@ -456,7 +466,7 @@
 
 <script>
     // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzxvyR2S5rOD-pfsDkSQACGoaLyzG-dvN9u_8DZQTv7kOt8DK814_cNpo1Dwj5AZlbqg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKSR6IyMBeeGMpCJ1jnISw2TKuQ8-RBTEhMQ64oJrKBHEXk5iyjHBDXa-GaBw7PP3a0g/exec";
 
     function autoFillApprovingPos() {
         const nameVal = document.getElementById('approvingName').value.trim().toUpperCase();
