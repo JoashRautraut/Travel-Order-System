@@ -34,23 +34,24 @@
         .activity-row input { flex: 1; }
         .activity-row .act-date { width: 140px; flex: none; }
 
-        .action-bar { max-width: 800px; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
-        .action-bar button { width: auto; margin-top: 0; padding: 10px 18px; font-size: 14px; }
+        .action-bar { max-width: 210mm; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
         .edit-notice { background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #ffeeba; margin-right: auto; }
+        .action-bar button { width: auto; margin-top: 0; padding: 10px 18px; font-size: 14px; }
         .btn-back { background: #555; }
         .btn-print { background: #0d47a1; }
 
         #to-document-wrapper { display: none; }
         
+        /* Eksaktong A4 Size: 210mm width x 297mm height */
         .paper {
-            max-width: 800px;
-            min-height: 1050px;
+            width: 210mm;
+            min-height: 297mm;
             margin: auto;
             background-color: white;
             background-image: url('https://lh3.googleusercontent.com/d/1K5RkxC8mM7_2POiJA-Zw03LhrUt52GMs');
             background-size: 100% 100%;
             background-repeat: no-repeat;
-            padding: 40px 50px;
+            padding: 15mm 20mm;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             box-sizing: border-box;
             position: relative;
@@ -70,7 +71,7 @@
             border-bottom: 1px dashed #1b5e20;
         }
 
-        .paper-content { position: relative; z-index: 2; display: flex; flex-direction: column; min-height: 970px; justify-content: space-between; }
+        .paper-content { position: relative; z-index: 2; display: flex; flex-direction: column; min-height: 260mm; justify-content: space-between; }
 
         .letterhead-container {
             text-align: center;
@@ -79,57 +80,59 @@
             margin-bottom: 12px;
         }
         .header-text { width: 100%; text-align: center; }
-        .lh-republic { font-size: 11px; letter-spacing: 0.5px; color: #444; margin: 0; }
-        .lh-dept { font-size: 13px; font-weight: bold; color: #333; margin: 2px 0; }
-        .lh-agency { font-size: 15px; font-weight: bold; color: #1b5e20; margin: 2px 0; }
-        .lh-region { font-size: 13px; font-weight: bold; color: #333; margin: 2px 0; }
-        .lh-address { font-size: 11px; color: #444; margin: 2px 0; }
+        .lh-republic { font-size: 10pt; letter-spacing: 0.5px; color: #444; margin: 0; }
+        .lh-dept { font-size: 12pt; font-weight: bold; color: #333; margin: 2px 0; }
+        .lh-agency { font-size: 14pt; font-weight: bold; color: #1b5e20; margin: 2px 0; }
+        .lh-region { font-size: 12pt; font-weight: bold; color: #333; margin: 2px 0; }
+        .lh-address { font-size: 10pt; color: #444; margin: 2px 0; }
         .lh-email { color: #1a73e8; text-decoration: underline; }
 
-        .doc-title { text-align: center; font-size: 15px; font-weight: bold; letter-spacing: 1px; margin: 8px 0 12px 0; }
+        .doc-title { text-align: center; font-size: 14pt; font-weight: bold; letter-spacing: 1px; margin: 8px 0 12px 0; }
 
-        .info-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 8px; }
+        .info-table { width: 100%; border-collapse: collapse; font-size: 11pt; margin-bottom: 8px; }
         .info-table td { padding: 3px 4px; vertical-align: top; }
-        .lbl { font-weight: bold; width: 170px; }
+        .lbl { font-weight: bold; width: 160px; }
         .val { font-weight: normal; }
-        .lbl-right { font-weight: bold; width: 125px; padding-left: 15px !important; }
-        .val-right { font-weight: bold; width: 120px; color: #0d47a1; }
+        .lbl-right { font-weight: bold; width: 120px; padding-left: 15px !important; }
+        .val-right { font-weight: bold; width: 110px; color: #0d47a1; }
 
         .multi-pers-list { margin: 0; padding: 0; list-style: none; }
         .multi-pers-list li { margin-bottom: 2px; line-height: 1.3; }
         .pers-pos-tag { font-style: italic; color: #222; }
 
-        #out-to-number-single, #out-to-number-multi { color: #0d47a1 !important; font-weight: bold; font-size: 15px; }
+        #out-to-number-single, #out-to-number-multi { color: #0d47a1 !important; font-weight: bold; font-size: 12pt; }
 
-        .per-diem-text { font-size: 13px; margin: 8px 0 12px 20px; line-height: 1.3; }
+        .per-diem-text { font-size: 11pt; margin: 8px 0 12px 15px; line-height: 1.3; }
 
-        .signatories { width: 100%; border-collapse: collapse; margin-top: 2px; margin-bottom: 12px; font-size: 13px; }
+        .signatories { width: 100%; border-collapse: collapse; margin-top: 2px; margin-bottom: 12px; font-size: 11pt; }
         .signatories td { vertical-align: top; padding: 0 15px; }
-        .sig-title { margin-bottom: 22px; text-align: center; }
+        .sig-title { margin-bottom: 20px; text-align: center; }
         .sig-name { font-weight: bold; text-align: center; text-transform: uppercase; }
-        .sig-pos { text-align: center; font-size: 12px; }
+        .sig-pos { text-align: center; font-size: 10pt; }
 
-        .coa-title { text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
-        .coa-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px; }
+        .coa-title { text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px; }
+        .coa-table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 10px; }
         .coa-table th, .coa-table td { border: 1px solid #000; padding: 4px 6px; text-align: center; }
 
-        .footer-wrapper { margin-top: auto; padding-top: 5px; }
+        .footer-wrapper { margin-top: auto; padding-top: 5px; text-align: left; }
         .footer-tagline {
-            font-family: Georgia, serif; font-style: italic; font-size: 12px;
+            font-family: Georgia, serif; font-style: italic; font-size: 10pt;
             color: #795548; border-bottom: 1px solid #d7ccc8; display: inline-block; padding-bottom: 2px;
         }
 
         @media print {
-            @page { size: A4; margin: 5mm 10mm; }
+            @page { size: A4; margin: 0; }
             body { background: white; padding: 0; margin: 0; }
             .no-print { display: none !important; }
             .editable-area { background-color: transparent !important; border: none !important; }
             .paper { 
+                width: 210mm;
+                height: 297mm;
+                max-width: 100%;
                 box-shadow: none; 
-                padding: 0; 
-                max-width: 100%; 
-                min-height: auto;
-                height: auto;
+                padding: 15mm 20mm; 
+                margin: 0;
+                page-break-after: avoid;
                 -webkit-print-color-adjust: exact !important; 
                 print-color-adjust: exact !important; 
             }
@@ -453,7 +456,7 @@
 
 <script>
     // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtiE_GL_m8xD61rI23_efuiTuyRf9wEbrEuvYria-vABmOPnEStbDk5jLCKbUYXMDWeQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzxvyR2S5rOD-pfsDkSQACGoaLyzG-dvN9u_8DZQTv7kOt8DK814_cNpo1Dwj5AZlbqg/exec";
 
     function autoFillApprovingPos() {
         const nameVal = document.getElementById('approvingName').value.trim().toUpperCase();
@@ -675,11 +678,11 @@
                 `;
             } else {
                 rightTdContent = `
-                    <div class="editable-area" contenteditable="true" style="text-align: center; font-size: 13px; margin-bottom: 12px;">By the Authority of the Regional Manager:</div>
+                    <div class="editable-area" contenteditable="true" style="text-align: center; font-size: 11pt; margin-bottom: 10px;">By the Authority of the Regional Manager:</div>
                     <div class="sig-name editable-area" contenteditable="true" style="margin-bottom: 2px;">${approvingNameVal}</div>
-                    <div class="sig-pos editable-area" contenteditable="true" style="margin-bottom: 12px;">${approvingPosVal}</div>
+                    <div class="sig-pos editable-area" contenteditable="true" style="margin-bottom: 10px;">${approvingPosVal}</div>
                     
-                    <div class="editable-area" contenteditable="true" style="text-align: center; font-size: 13px; margin-bottom: 3px;">Approved:</div>
+                    <div class="editable-area" contenteditable="true" style="text-align: center; font-size: 11pt; margin-bottom: 2px;">Approved:</div>
                     <div class="sig-name editable-area" contenteditable="true" style="margin-bottom: 2px;">${defaultApprover.name}</div>
                     <div class="sig-pos editable-area" contenteditable="true">${defaultApprover.pos}</div>
                 `;
@@ -712,7 +715,7 @@
                 activitiesArr.forEach(act => {
                     coaBody.innerHTML += `
                         <tr>
-                            <td class="editable-area" contenteditable="true" style="height: 24px;">${act.place || ""}</td>
+                            <td class="editable-area" contenteditable="true" style="height: 22px;">${act.place || ""}</td>
                             <td class="editable-area" contenteditable="true">${act.date || ""}</td>
                             <td class="editable-area" contenteditable="true">${act.purpose || ""}</td>
                             <td class="editable-area" contenteditable="true"></td>
@@ -723,7 +726,7 @@
                 for (let i = 0; i < 4; i++) {
                     coaBody.innerHTML += `
                         <tr>
-                            <td class="editable-area" contenteditable="true" style="height: 24px;"></td>
+                            <td class="editable-area" contenteditable="true" style="height: 22px;"></td>
                             <td class="editable-area" contenteditable="true"></td>
                             <td class="editable-area" contenteditable="true"></td>
                             <td class="editable-area" contenteditable="true"></td>
