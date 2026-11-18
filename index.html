@@ -459,11 +459,12 @@
 </div>
 
 <script>
-    // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwNjALc0OIJv4tTq-r98dXYZHo3z8NjRcQBEQQC_NdS_98Y4Ezu1TAgbj3T4l04-qvjaw/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxupjWI8xJrkCEqdml4gaoXVM_TvuJrAE1rlKlO1MDQsCcMa4HHtBDshMuXHSUVJHoDFw/exec";
     let activeTONumber = "";
     let currentTOType = "regional";
     let currentApprovingOfficerText = "";
+    let originalDestination = "";
+    let originalActivitiesSummary = "";
 
     function autoFillApprovingPos() {
         const nameVal = document.getElementById('approvingName').value.trim().toUpperCase();
@@ -596,6 +597,9 @@
             destinationVal = "Different barangays of " + Array.from(placesSet).join(", ");
         }
 
+        originalDestination = destinationVal;
+        originalActivitiesSummary = JSON.stringify(activitiesArr);
+
         let namesCombined = personnelList.map(p => p.name).join(" / ");
         let positionsCombined = personnelList.map(p => p.position).join(" / ");
 
@@ -611,7 +615,7 @@
             transportation: document.getElementById('transportation').value,
             supervisor: supervisorVal ? supervisorVal : "N/A",
             approvingOfficer: currentApprovingOfficerText,
-            activitiesSummary: JSON.stringify(activitiesArr)
+            activitiesSummary: originalActivitiesSummary
         };
 
         fetch(SCRIPT_URL, {
@@ -776,15 +780,15 @@
             namesCombined: namesVal,
             positionsCombined: posVal,
             station: document.getElementById('out-station').innerText.trim(),
-            destination: currentTOType === 'regional' ? document.getElementById('out-destination').innerText.trim() : document.getElementById('out-visited-text').innerText.trim(),
+            destination: originalDestination,
             purpose: document.getElementById('out-purpose').innerText.trim(),
             departure: document.getElementById('out-departure').innerText.trim(),
             returnDate: document.getElementById('out-return').innerText.trim(),
             transportation: document.getElementById('out-transportation').innerText.trim(),
             supervisor: "N/A",
-            approvingOfficer: currentApprovingOfficerText, // Gamitin ang tamang approving officer
+            approvingOfficer: currentApprovingOfficerText,
             toType: currentTOType,
-            activitiesSummary: "Updated via Web UI"
+            activitiesSummary: originalActivitiesSummary
         };
 
         fetch(SCRIPT_URL, {
@@ -799,7 +803,6 @@
             }, 500);
         })
         .catch(error => {
-            // Kahit mag-error ang net, i-allow pa rin mag-print para hindi maabala ang user
             window.print();
         });
     }
