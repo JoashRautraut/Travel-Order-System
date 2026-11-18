@@ -38,11 +38,11 @@
         .edit-notice { background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #ffeeba; margin-right: auto; }
         .action-bar button { width: auto; margin-top: 0; padding: 10px 18px; font-size: 14px; }
         .btn-back { background: #555; }
+        .btn-save-db { background: #2e7d32; }
         .btn-print { background: #0d47a1; }
 
         #to-document-wrapper { display: none; }
         
-        /* Eksaktong A4 Size: 210mm width x 297mm height */
         .paper {
             width: 210mm;
             min-height: 297mm;
@@ -111,8 +111,6 @@
         .sig-pos { text-align: center; font-size: 10pt; }
 
         .coa-title { text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px; }
-        
-        /* I-ensure na solid black ang borders ng Certificate of Appearance table */
         .coa-table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 10px; border: 1px solid #000; }
         .coa-table th, .coa-table td { border: 1px solid #000 !important; padding: 5px 6px; text-align: center; }
 
@@ -127,14 +125,11 @@
             body { background: white; padding: 0; margin: 0; }
             .no-print { display: none !important; }
             .editable-area { background-color: transparent !important; border: none !important; }
-            
-            /* Pinipilit ng print mode na lumitaw ang mga borders ng COA table */
             .coa-table, .coa-table th, .coa-table td {
                 border: 1px solid #000 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-
             .paper { 
                 width: 210mm;
                 height: 297mm;
@@ -361,8 +356,9 @@
 
 <div id="to-document-wrapper">
     <div class="action-bar no-print">
-        <div class="edit-notice">💡 Tip: Pwede mong i-click at i-edit ang anumang text sa papel kung may babaguhin ka!</div>
+        <div class="edit-notice">💡 Pwede mong i-edit ang text sa papel, pagkatapos ay i-click ang Save para ma-sync sa DB!</div>
         <button class="btn-back" onclick="createNewTO()">+ Create Another TO</button>
+        <button class="btn-save-db" id="saveDbBtn" onclick="saveChangesToDB()">💾 Save Changes to DB</button>
         <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
     </div>
 
@@ -387,6 +383,7 @@
                         <td class="lbl editable-area" contenteditable="true">Name:</td>
                         <td class="val editable-area" contenteditable="true" id="out-name" style="text-transform: uppercase; font-weight: bold;"></td>
                         <td class="lbl-right editable-area" contenteditable="true">Travel Order No.:</td>
+                        <!-- HINDI nababago ang TO Number -->
                         <td class="val-right" id="out-to-number-single"></td>
                     </tr>
                     <tr id="single-pos-row">
@@ -466,7 +463,9 @@
 
 <script>
     // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKSR6IyMBeeGMpCJ1jnISw2TKuQ8-RBTEhMQ64oJrKBHEXk5iyjHBDXa-GaBw7PP3a0g/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsQvZ0D7LrgHwLgEbme0x_Px9l3ocnrHzbmavAoDSWALk3rf7YuvH4Ip-QRaDEx1wqjQ/exec";
+    let activeTONumber = "";
+    let currentTOType = "regional";
 
     function autoFillApprovingPos() {
         const nameVal = document.getElementById('approvingName').value.trim().toUpperCase();
@@ -569,7 +568,7 @@
             }
         });
 
-        var toType = document.querySelector('input[name="toType"]:checked').value;
+        currentTOType = document.querySelector('input[name="toType"]:checked').value;
         var btn = document.getElementById('submitBtn');
         btn.disabled = true;
         btn.innerText = "Saving to Database & Generating TO...";
@@ -582,7 +581,7 @@
         let destinationVal = "";
         let activitiesArr = [];
 
-        if (toType === 'regional') {
+        if (currentTOType === 'regional') {
             destinationVal = document.getElementById('destination').value;
         } else {
             let placeRows = document.querySelectorAll('.activity-row');
@@ -603,7 +602,7 @@
         let positionsCombined = personnelList.map(p => p.position).join(" / ");
 
         var formData = {
-            toType: toType,
+            toType: currentTOType,
             namesCombined: namesCombined,
             positionsCombined: positionsCombined,
             station: document.getElementById('station').value,
@@ -627,7 +626,7 @@
                 throw new Error(data.message);
             }
             
-            let assignedTONumber = data.toNumber;
+            activeTONumber = data.toNumber;
             
             let today = new Date();
             let mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -640,7 +639,7 @@
                 document.getElementById('single-pos-row').style.display = 'table-row';
                 document.getElementById('multi-personnel-row').style.display = 'none';
 
-                document.getElementById('out-to-number-single').innerText = assignedTONumber;
+                document.getElementById('out-to-number-single').innerText = activeTONumber;
                 document.getElementById('out-date-filed-single').innerText = formattedToday;
                 document.getElementById('out-name').innerText = personnelList[0].name;
                 document.getElementById('out-position').innerText = personnelList[0].position;
@@ -649,7 +648,7 @@
                 document.getElementById('single-pos-row').style.display = 'none';
                 document.getElementById('multi-personnel-row').style.display = 'table-row';
 
-                document.getElementById('out-to-number-multi').innerText = assignedTONumber;
+                document.getElementById('out-to-number-multi').innerText = activeTONumber;
                 document.getElementById('out-date-filed-multi').innerText = formattedToday;
 
                 let ulHtml = '<ul class="multi-pers-list">';
@@ -666,7 +665,7 @@
             document.getElementById('out-return').innerText = formData.returnDate;
             document.getElementById('out-transportation').innerText = formData.transportation;
 
-            if (toType === 'regional') {
+            if (currentTOType === 'regional') {
                 document.getElementById('out-destination-row').style.display = 'table-row';
                 document.getElementById('out-visited-row').style.display = 'none';
                 document.getElementById('out-destination').innerText = destinationVal;
@@ -721,7 +720,7 @@
             let coaBody = document.getElementById('out-coa-tbody');
             coaBody.innerHTML = "";
 
-            if (toType === 'provincial' && activitiesArr.length > 0) {
+            if (currentTOType === 'provincial' && activitiesArr.length > 0) {
                 activitiesArr.forEach(act => {
                     coaBody.innerHTML += `
                         <tr>
@@ -759,10 +758,64 @@
         });
     }
 
+    function saveChangesToDB() {
+        var saveBtn = document.getElementById('saveDbBtn');
+        saveBtn.disabled = true;
+        saveBtn.innerText = "Updating DB...";
+
+        // Kunin ang mga bagong text mula sa screen
+        let namesVal = "";
+        let posVal = "";
+        if (document.getElementById('single-name-row').style.display !== 'none') {
+            namesVal = document.getElementById('out-name').innerText.trim();
+            posVal = document.getElementById('out-position').innerText.trim();
+        } else {
+            namesVal = document.getElementById('out-multi-personnel').innerText.trim();
+            posVal = "Multiple Positions";
+        }
+
+        var updateData = {
+            action: "update",
+            toNumber: activeTONumber,
+            namesCombined: namesVal,
+            positionsCombined: posVal,
+            station: document.getElementById('out-station').innerText.trim(),
+            destination: currentTOType === 'regional' ? document.getElementById('out-destination').innerText.trim() : document.getElementById('out-visited-text').innerText.trim(),
+            purpose: document.getElementById('out-purpose').innerText.trim(),
+            departure: document.getElementById('out-departure').innerText.trim(),
+            returnDate: document.getElementById('out-return').innerText.trim(),
+            transportation: document.getElementById('out-transportation').innerText.trim(),
+            supervisor: "N/A", // Pwede ring i-parse kung kailangan
+            approvingOfficer: "Updated via Web",
+            toType: currentTOType,
+            activitiesSummary: "Updated via Web UI"
+        };
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(updateData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "error") {
+                throw new Error(data.message);
+            }
+            alert("Tagumpay! Na-update na ang data sa database nang hindi nabago ang Travel Order Number.");
+            saveBtn.disabled = false;
+            saveBtn.innerText = "💾 Save Changes to DB";
+        })
+        .catch(error => {
+            alert("Error sa pag-update: " + error.message);
+            saveBtn.disabled = false;
+            saveBtn.innerText = "💾 Save Changes to DB";
+        });
+    }
+
     function createNewTO() {
         document.getElementById('travelForm').reset();
         document.getElementById('approvingName').value = "YVETTE B. GUANZON";
         document.getElementById('approvingPos').value = "Regional Manager III";
+        activeTONumber = "";
         toggleTOType();
         document.getElementById('to-document-wrapper').style.display = 'none';
         document.getElementById('form-section').style.display = 'block';
