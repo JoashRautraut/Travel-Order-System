@@ -35,10 +35,9 @@
         .activity-row .act-date { width: 140px; flex: none; }
 
         .action-bar { max-width: 210mm; margin: 0 auto 15px auto; display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
-        .edit-notice { background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #ffeeba; margin-right: auto; }
+        .edit-notice { background: #e8f5e9; color: #2e7d32; padding: 8px 12px; border-radius: 4px; font-size: 13px; border: 1px solid #c8e6c9; margin-right: auto; font-weight: bold; }
         .action-bar button { width: auto; margin-top: 0; padding: 10px 18px; font-size: 14px; }
         .btn-back { background: #555; }
-        .btn-save-db { background: #2e7d32; }
         .btn-print { background: #0d47a1; }
 
         #to-document-wrapper { display: none; }
@@ -356,9 +355,8 @@
 
 <div id="to-document-wrapper">
     <div class="action-bar no-print">
-        <div class="edit-notice">💡 Pwede mong i-edit ang text sa papel, pagkatapos ay i-click ang Save para ma-sync sa DB!</div>
+        <div class="edit-notice" id="autoSaveStatus">⚡ Auto-Save Active: Naka-sync sa DB ang mga pagbabago mo.</div>
         <button class="btn-back" onclick="createNewTO()">+ Create Another TO</button>
-        <button class="btn-save-db" id="saveDbBtn" onclick="saveChangesToDB()">💾 Save Changes to DB</button>
         <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
     </div>
 
@@ -367,72 +365,72 @@
             <div>
                 <div class="letterhead-container">
                     <div class="header-text">
-                        <p class="lh-republic editable-area" contenteditable="true">REPUBLIC OF THE PHILIPPINES</p>
-                        <p class="lh-dept editable-area" contenteditable="true">DEPARTMENT OF AGRICULTURE</p>
-                        <p class="lh-agency editable-area" contenteditable="true">PHILIPPINE COCONUT AUTHORITY</p>
-                        <p class="lh-region editable-area" contenteditable="true">Region X - Northern Mindanao</p>
-                        <p class="lh-address editable-area" contenteditable="true">Zone 3, Poblacion, El Salvador City, Misamis Oriental, 9017</p>
-                        <p class="lh-address">Tel. Nos.: (088) 851-9668 | Email Address: <span class="lh-email editable-area" contenteditable="true">pca_regionx@pca.gov.ph</span></p>
+                        <p class="lh-republic editable-area" contenteditable="true" onblur="autoSaveToDB()">REPUBLIC OF THE PHILIPPINES</p>
+                        <p class="lh-dept editable-area" contenteditable="true" onblur="autoSaveToDB()">DEPARTMENT OF AGRICULTURE</p>
+                        <p class="lh-agency editable-area" contenteditable="true" onblur="autoSaveToDB()">PHILIPPINE COCONUT AUTHORITY</p>
+                        <p class="lh-region editable-area" contenteditable="true" onblur="autoSaveToDB()">Region X - Northern Mindanao</p>
+                        <p class="lh-address editable-area" contenteditable="true" onblur="autoSaveToDB()">Zone 3, Poblacion, El Salvador City, Misamis Oriental, 9017</p>
+                        <p class="lh-address">Tel. Nos.: (088) 851-9668 | Email Address: <span class="lh-email editable-area" contenteditable="true" onblur="autoSaveToDB()">pca_regionx@pca.gov.ph</span></p>
                     </div>
                 </div>
 
-                <div class="doc-title editable-area" contenteditable="true">TRAVEL ORDER</div>
+                <div class="doc-title editable-area" contenteditable="true" onblur="autoSaveToDB()">TRAVEL ORDER</div>
 
                 <table class="info-table">
                     <tr id="single-name-row">
-                        <td class="lbl editable-area" contenteditable="true">Name:</td>
-                        <td class="val editable-area" contenteditable="true" id="out-name" style="text-transform: uppercase; font-weight: bold;"></td>
-                        <td class="lbl-right editable-area" contenteditable="true">Travel Order No.:</td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Name:</td>
+                        <td class="val editable-area" contenteditable="true" id="out-name" onblur="autoSaveToDB()" style="text-transform: uppercase; font-weight: bold;"></td>
+                        <td class="lbl-right editable-area" contenteditable="true" onblur="autoSaveToDB()">Travel Order No.:</td>
                         <!-- HINDI nababago ang TO Number -->
                         <td class="val-right" id="out-to-number-single"></td>
                     </tr>
                     <tr id="single-pos-row">
-                        <td class="lbl editable-area" contenteditable="true">Position:</td>
-                        <td class="val editable-area" contenteditable="true" id="out-position"></td>
-                        <td class="lbl-right editable-area" contenteditable="true">Date:</td>
-                        <td class="val-right editable-area" contenteditable="true" id="out-date-filed-single" style="font-weight: normal; color: #000;"></td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Position:</td>
+                        <td class="val editable-area" contenteditable="true" id="out-position" onblur="autoSaveToDB()"></td>
+                        <td class="lbl-right editable-area" contenteditable="true" onblur="autoSaveToDB()">Date:</td>
+                        <td class="val-right editable-area" contenteditable="true" id="out-date-filed-single" onblur="autoSaveToDB()" style="font-weight: normal; color: #000;"></td>
                     </tr>
 
                     <tr id="multi-personnel-row" style="display: none;">
-                        <td class="lbl editable-area" contenteditable="true">Personnel(s):</td>
-                        <td class="val editable-area" contenteditable="true" id="out-multi-personnel"></td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Personnel(s):</td>
+                        <td class="val editable-area" contenteditable="true" id="out-multi-personnel" onblur="autoSaveToDB()"></td>
                         <td colspan="2" style="vertical-align: top; padding-left: 15px;">
-                            <div><b class="editable-area" contenteditable="true">Travel Order No.:</b> <span id="out-to-number-multi"></span></div>
-                            <div style="margin-top: 4px;"><b class="editable-area" contenteditable="true">Date:</b> <span class="editable-area" contenteditable="true" id="out-date-filed-multi" style="color: #000;"></span></div>
+                            <div><b class="editable-area" contenteditable="true" onblur="autoSaveToDB()">Travel Order No.:</b> <span id="out-to-number-multi"></span></div>
+                            <div style="margin-top: 4px;"><b class="editable-area" contenteditable="true" onblur="autoSaveToDB()">Date:</b> <span class="editable-area" contenteditable="true" id="out-date-filed-multi" onblur="autoSaveToDB()" style="color: #000;"></span></div>
                         </td>
                     </tr>
 
                     <tr>
-                        <td class="lbl editable-area" contenteditable="true">Official Station:</td>
-                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-station"></td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Official Station:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-station" onblur="autoSaveToDB()"></td>
                     </tr>
                     <tr id="out-destination-row">
-                        <td class="lbl editable-area" contenteditable="true">Destination:</td>
-                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-destination"></td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Destination:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-destination" onblur="autoSaveToDB()"></td>
                     </tr>
                     <tr id="out-visited-row" style="display: none;">
-                        <td class="lbl editable-area" contenteditable="true">Place (s) Visited:</td>
-                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-visited-text"></td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Place (s) Visited:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-visited-text" onblur="autoSaveToDB()"></td>
                     </tr>
                     <tr>
-                        <td class="lbl editable-area" contenteditable="true">Purpose:</td>
-                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-purpose"></td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Purpose:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-purpose" onblur="autoSaveToDB()"></td>
                     </tr>
                     <tr>
-                        <td class="lbl editable-area" contenteditable="true">Date of Departure:</td>
-                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-departure"></td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Date of Departure:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-departure" onblur="autoSaveToDB()"></td>
                     </tr>
                     <tr>
-                        <td class="lbl editable-area" contenteditable="true">Date of Return:</td>
-                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-return"></td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Date of Return:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-return" onblur="autoSaveToDB()"></td>
                     </tr>
                     <tr>
-                        <td class="lbl editable-area" contenteditable="true">Means of Transportation:</td>
-                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-transportation"></td>
+                        <td class="lbl editable-area" contenteditable="true" onblur="autoSaveToDB()">Means of Transportation:</td>
+                        <td class="val editable-area" contenteditable="true" colspan="3" id="out-transportation" onblur="autoSaveToDB()"></td>
                     </tr>
                 </table>
 
-                <div class="per-diem-text editable-area" contenteditable="true">
+                <div class="per-diem-text editable-area" contenteditable="true" onblur="autoSaveToDB()">
                     You are entitled to Per Diem and Allowances in accordance with existing regulations during your travel.
                 </div>
 
@@ -440,14 +438,14 @@
                     <tr id="signatories-row"></tr>
                 </table>
 
-                <div class="coa-title editable-area" contenteditable="true">CERTIFICATE OF APPEARANCE</div>
+                <div class="coa-title editable-area" contenteditable="true" onblur="autoSaveToDB()">CERTIFICATE OF APPEARANCE</div>
                 <table class="coa-table">
                     <thead>
                         <tr>
-                            <th class="editable-area" contenteditable="true" style="width: 30%;">PLACE VISITED</th>
-                            <th class="editable-area" contenteditable="true" style="width: 15%;">DATE</th>
-                            <th class="editable-area" contenteditable="true" style="width: 35%;">PURPOSE</th>
-                            <th class="editable-area" contenteditable="true" style="width: 20%;">CERTIFYING OFFICE/PERSON</th>
+                            <th class="editable-area" contenteditable="true" onblur="autoSaveToDB()" style="width: 30%;">PLACE VISITED</th>
+                            <th class="editable-area" contenteditable="true" onblur="autoSaveToDB()" style="width: 15%;">DATE</th>
+                            <th class="editable-area" contenteditable="true" onblur="autoSaveToDB()" style="width: 35%;">PURPOSE</th>
+                            <th class="editable-area" contenteditable="true" onblur="autoSaveToDB()" style="width: 20%;">CERTIFYING OFFICE/PERSON</th>
                         </tr>
                     </thead>
                     <tbody id="out-coa-tbody"></tbody>
@@ -455,7 +453,7 @@
             </div>
 
             <div class="footer-wrapper">
-                <div class="footer-tagline editable-area" contenteditable="true">Masaganang Agrikultura, Maunlad na Ekonomiya</div>
+                <div class="footer-tagline editable-area" contenteditable="true" onblur="autoSaveToDB()">Masaganang Agrikultura, Maunlad na Ekonomiya</div>
             </div>
         </div>
     </div>
@@ -463,9 +461,10 @@
 
 <script>
     // ILAGAY DITO ANG IYONG GOOGLE APPS SCRIPT WEB APP URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsQvZ0D7LrgHwLgEbme0x_Px9l3ocnrHzbmavAoDSWALk3rf7YuvH4Ip-QRaDEx1wqjQ/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgpWNyyYVMJbbxh9vv4d-jMCb32pWKi3boYn4JcTZw726Sl1sCaxiQCdqpoXGsILdW8w/exec";
     let activeTONumber = "";
     let currentTOType = "regional";
+    let saveTimeout = null;
 
     function autoFillApprovingPos() {
         const nameVal = document.getElementById('approvingName').value.trim().toUpperCase();
@@ -653,7 +652,7 @@
 
                 let ulHtml = '<ul class="multi-pers-list">';
                 personnelList.forEach(p => {
-                    ulHtml += `<li class="editable-area" contenteditable="true"><b>${p.name}</b> — <span class="pers-pos-tag">${p.position}</span></li>`;
+                    ulHtml += `<li class="editable-area" contenteditable="true" onblur="autoSaveToDB()"><b>${p.name}</b> — <span class="pers-pos-tag">${p.position}</span></li>`;
                 });
                 ulHtml += '</ul>';
                 document.getElementById('out-multi-personnel').innerHTML = ulHtml;
@@ -681,28 +680,28 @@
 
             if (approvingNameVal === "YVETTE B. GUANZON") {
                 rightTdContent = `
-                    <div class="sig-title editable-area" contenteditable="true">Approved:</div>
-                    <div class="sig-name editable-area" contenteditable="true">${approvingNameVal}</div>
-                    <div class="sig-pos editable-area" contenteditable="true">${approvingPosVal}</div>
+                    <div class="sig-title editable-area" contenteditable="true" onblur="autoSaveToDB()">Approved:</div>
+                    <div class="sig-name editable-area" contenteditable="true" onblur="autoSaveToDB()">${approvingNameVal}</div>
+                    <div class="sig-pos editable-area" contenteditable="true" onblur="autoSaveToDB()">${approvingPosVal}</div>
                 `;
             } else {
                 rightTdContent = `
-                    <div class="editable-area" contenteditable="true" style="text-align: center; font-size: 11pt; margin-bottom: 10px;">By the Authority of the Regional Manager:</div>
-                    <div class="sig-name editable-area" contenteditable="true" style="margin-bottom: 2px;">${approvingNameVal}</div>
-                    <div class="sig-pos editable-area" contenteditable="true" style="margin-bottom: 10px;">${approvingPosVal}</div>
+                    <div class="editable-area" contenteditable="true" onblur="autoSaveToDB()" style="text-align: center; font-size: 11pt; margin-bottom: 10px;">By the Authority of the Regional Manager:</div>
+                    <div class="sig-name editable-area" contenteditable="true" onblur="autoSaveToDB()" style="margin-bottom: 2px;">${approvingNameVal}</div>
+                    <div class="sig-pos editable-area" contenteditable="true" onblur="autoSaveToDB()" style="margin-bottom: 10px;">${approvingPosVal}</div>
                     
-                    <div class="editable-area" contenteditable="true" style="text-align: center; font-size: 11pt; margin-bottom: 2px;">Approved:</div>
-                    <div class="sig-name editable-area" contenteditable="true" style="margin-bottom: 2px;">${defaultApprover.name}</div>
-                    <div class="sig-pos editable-area" contenteditable="true">${defaultApprover.pos}</div>
+                    <div class="editable-area" contenteditable="true" onblur="autoSaveToDB()" style="text-align: center; font-size: 11pt; margin-bottom: 2px;">Approved:</div>
+                    <div class="sig-name editable-area" contenteditable="true" onblur="autoSaveToDB()" style="margin-bottom: 2px;">${defaultApprover.name}</div>
+                    <div class="sig-pos editable-area" contenteditable="true" onblur="autoSaveToDB()">${defaultApprover.pos}</div>
                 `;
             }
 
             if (supervisorVal) {
                 sigRow.innerHTML = `
                     <td style="width: 50%;">
-                        <div class="sig-title editable-area" contenteditable="true">Recommending Approval:</div>
-                        <div class="sig-name editable-area" contenteditable="true">${supervisorVal}</div>
-                        <div class="sig-pos editable-area" contenteditable="true">Immediate Supervisor</div>
+                        <div class="sig-title editable-area" contenteditable="true" onblur="autoSaveToDB()">Recommending Approval:</div>
+                        <div class="sig-name editable-area" contenteditable="true" onblur="autoSaveToDB()">${supervisorVal}</div>
+                        <div class="sig-pos editable-area" contenteditable="true" onblur="autoSaveToDB()">Immediate Supervisor</div>
                     </td>
                     <td style="width: 50%;">
                         ${rightTdContent}
@@ -724,10 +723,10 @@
                 activitiesArr.forEach(act => {
                     coaBody.innerHTML += `
                         <tr>
-                            <td class="editable-area" contenteditable="true" style="height: 22px;">${act.place || ""}</td>
-                            <td class="editable-area" contenteditable="true">${act.date || ""}</td>
-                            <td class="editable-area" contenteditable="true">${act.purpose || ""}</td>
-                            <td class="editable-area" contenteditable="true"></td>
+                            <td class="editable-area" contenteditable="true" onblur="autoSaveToDB()" style="height: 22px;">${act.place || ""}</td>
+                            <td class="editable-area" contenteditable="true" onblur="autoSaveToDB()">${act.date || ""}</td>
+                            <td class="editable-area" contenteditable="true" onblur="autoSaveToDB()">${act.purpose || ""}</td>
+                            <td class="editable-area" contenteditable="true" onblur="autoSaveToDB()"></td>
                         </tr>
                     `;
                 });
@@ -735,10 +734,10 @@
                 for (let i = 0; i < 4; i++) {
                     coaBody.innerHTML += `
                         <tr>
-                            <td class="editable-area" contenteditable="true" style="height: 22px;"></td>
-                            <td class="editable-area" contenteditable="true"></td>
-                            <td class="editable-area" contenteditable="true"></td>
-                            <td class="editable-area" contenteditable="true"></td>
+                            <td class="editable-area" contenteditable="true" onblur="autoSaveToDB()" style="height: 22px;"></td>
+                            <td class="editable-area" contenteditable="true" onblur="autoSaveToDB()"></td>
+                            <td class="editable-area" contenteditable="true" onblur="autoSaveToDB()"></td>
+                            <td class="editable-area" contenteditable="true" onblur="autoSaveToDB()"></td>
                         </tr>
                     `;
                 }
@@ -758,12 +757,12 @@
         });
     }
 
-    function saveChangesToDB() {
-        var saveBtn = document.getElementById('saveDbBtn');
-        saveBtn.disabled = true;
-        saveBtn.innerText = "Updating DB...";
+    function autoSaveToDB() {
+        let statusEl = document.getElementById('autoSaveStatus');
+        statusEl.innerText = "⏳ Auto-saving changes...";
+        statusEl.style.backgroundColor = "#fff3cd";
+        statusEl.style.color = "#856404";
 
-        // Kunin ang mga bagong text mula sa screen
         let namesVal = "";
         let posVal = "";
         if (document.getElementById('single-name-row').style.display !== 'none') {
@@ -785,30 +784,34 @@
             departure: document.getElementById('out-departure').innerText.trim(),
             returnDate: document.getElementById('out-return').innerText.trim(),
             transportation: document.getElementById('out-transportation').innerText.trim(),
-            supervisor: "N/A", // Pwede ring i-parse kung kailangan
-            approvingOfficer: "Updated via Web",
+            supervisor: "N/A",
+            approvingOfficer: "Auto-saved via Web",
             toType: currentTOType,
-            activitiesSummary: "Updated via Web UI"
+            activitiesSummary: "Auto-saved via Web UI"
         };
 
-        fetch(SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify(updateData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "error") {
-                throw new Error(data.message);
-            }
-            alert("Tagumpay! Na-update na ang data sa database nang hindi nabago ang Travel Order Number.");
-            saveBtn.disabled = false;
-            saveBtn.innerText = "💾 Save Changes to DB";
-        })
-        .catch(error => {
-            alert("Error sa pag-update: " + error.message);
-            saveBtn.disabled = false;
-            saveBtn.innerText = "💾 Save Changes to DB";
-        });
+        // Debounce para hindi mag-flood ng requests habang nagta-type
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify(updateData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "error") {
+                    throw new Error(data.message);
+                }
+                statusEl.innerText = "✅ Saved to DB automatically!";
+                statusEl.style.backgroundColor = "#e8f5e9";
+                statusEl.style.color = "#2e7d32";
+            })
+            .catch(error => {
+                statusEl.innerText = "❌ Failed to auto-save!";
+                statusEl.style.backgroundColor = "#ffebee";
+                statusEl.style.color = "#c62828";
+            });
+        }, 800);
     }
 
     function createNewTO() {
